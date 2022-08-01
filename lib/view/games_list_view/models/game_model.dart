@@ -2,7 +2,17 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'game_model.g.dart';
 
-@JsonSerializable(createToJson: false)
+Platforms? _platformToJson(String data) {
+  switch (data) {
+    case "PC (Windows)":
+      return Platforms.pc;
+    case "Web Browser":
+      return Platforms.browser;
+  }
+  return null;
+}
+
+@JsonSerializable(createToJson: false, fieldRename: FieldRename.snake)
 class GameModel {
   int? id;
   String? title;
@@ -10,7 +20,8 @@ class GameModel {
   String? shortDescription;
   String? gameUrl;
   String? genre;
-  String? platform;
+  @JsonKey(fromJson: _platformToJson)
+  Platforms? platform;
   String? publisher;
   String? developer;
   String? releaseDate;
@@ -34,14 +45,9 @@ class GameModel {
   }
 }
 
-class GameModels {
-  List<GameModel> models = [
-    GameModel(id: 5, title: 'deneme', shortDescription: 'sdg'),
-    GameModel(id: 5, title: 'deneme', shortDescription: 'sdg'),
-    GameModel(id: 5, title: 'deneme', shortDescription: 'sdg'),
-    GameModel(id: 5, title: 'deneme', shortDescription: 'sdg'),
-    GameModel(id: 5, title: 'deneme', shortDescription: 'sdg'),
-    GameModel(id: 5, title: 'deneme', shortDescription: 'sdg'),
-    GameModel(id: 5, title: 'deneme', shortDescription: 'sdg')
-  ];
+enum Platforms {
+  @JsonValue('PC (Windows)')
+  pc,
+  @JsonValue('Web Browser')
+  browser
 }

@@ -6,11 +6,11 @@ class DarkTheme {
   ThemeData get theme => ThemeData.dark().copyWith(
         primaryColor: Colors.blue,
         textTheme: GoogleFonts.poppinsTextTheme(textTheme),
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         cardTheme: CardTheme(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10))),
-        appBarTheme:
-            AppBarTheme(elevation: 0, backgroundColor: Colors.transparent),
+        appBarTheme: const AppBarTheme(
+            elevation: 0, backgroundColor: Colors.transparent),
       );
 }

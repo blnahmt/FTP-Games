@@ -1,9 +1,10 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:ftp_games/view/game_detail_view/models/game_detail_model.dart';
 import 'package:ftp_games/view/games_list_view/models/game_model.dart';
-import 'package:ftp_games/view/games_list_view/service/IGameService.dart';
+import 'package:ftp_games/view/games_list_view/service/i_game_service.dart';
 
 class GameService extends IGameService {
   GameService(Dio dio) : super(dio);
@@ -12,6 +13,7 @@ class GameService extends IGameService {
     var response = await dio.get(FTPApiPaths.games.rawPath);
     if (response.statusCode == HttpStatus.ok) {
       var jsonBody = response.data;
+      inspect(jsonBody);
       if (jsonBody is List) {
         return jsonBody.map((json) => GameModel.fromJson(json)).toList();
       }
@@ -25,6 +27,7 @@ class GameService extends IGameService {
         await dio.get(FTPApiPaths.game.rawPath, queryParameters: {"id": id});
     if (response.statusCode == HttpStatus.ok) {
       var jsonBody = response.data;
+      inspect(jsonBody);
       return GameDetailModel.fromJson(jsonBody);
     }
     return null;

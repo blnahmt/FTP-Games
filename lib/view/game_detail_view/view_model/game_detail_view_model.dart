@@ -2,12 +2,13 @@ import 'dart:developer';
 
 import 'package:ftp_games/core/network/network_manager.dart';
 import 'package:ftp_games/view/game_detail_view/models/game_detail_model.dart';
-import 'package:ftp_games/view/games_list_view/service/IGameService.dart';
+import 'package:ftp_games/view/games_list_view/service/i_game_service.dart';
 import 'package:mobx/mobx.dart';
 
-import '../../games_list_view/service/GameService.dart';
+import '../../games_list_view/service/game_service.dart';
 part 'game_detail_view_model.g.dart';
 
+// ignore: library_private_types_in_public_api
 class GameDetailViewModel = _GameDetailViewModelBase with _$GameDetailViewModel;
 
 abstract class _GameDetailViewModelBase with Store {

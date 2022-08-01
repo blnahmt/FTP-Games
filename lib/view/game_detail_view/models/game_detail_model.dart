@@ -1,8 +1,19 @@
+import 'package:ftp_games/view/games_list_view/models/game_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'game_detail_model.g.dart';
 
-@JsonSerializable(createToJson: false)
+Platforms? _platformToJson(String data) {
+  switch (data) {
+    case "Windows":
+      return Platforms.pc;
+    case "Web Browser":
+      return Platforms.browser;
+  }
+  return null;
+}
+
+@JsonSerializable(createToJson: false, fieldRename: FieldRename.snake)
 class GameDetailModel {
   int? id;
   String? title;
@@ -12,7 +23,8 @@ class GameDetailModel {
   String? description;
   String? gameUrl;
   String? genre;
-  String? platform;
+  @JsonKey(fromJson: _platformToJson)
+  Platforms? platform;
   String? publisher;
   String? developer;
   String? releaseDate;
@@ -42,7 +54,7 @@ class GameDetailModel {
   }
 }
 
-@JsonSerializable(createToJson: false)
+@JsonSerializable(createToJson: false, fieldRename: FieldRename.snake)
 class MinimumSystemRequirements {
   String? os;
   String? processor;
@@ -58,7 +70,7 @@ class MinimumSystemRequirements {
   }
 }
 
-@JsonSerializable(createToJson: false)
+@JsonSerializable(createToJson: false, fieldRename: FieldRename.snake)
 class Screenshots {
   int? id;
   String? image;
