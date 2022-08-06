@@ -1,5 +1,5 @@
-import 'dart:developer';
-
+import 'package:ftp_games/core/enums/category_enum.dart';
+import 'package:ftp_games/core/enums/sort_enum.dart';
 import 'package:ftp_games/core/network/network_manager.dart';
 import 'package:ftp_games/view/games_list_view/models/game_model.dart';
 import 'package:ftp_games/view/games_list_view/service/game_service.dart';
@@ -21,19 +21,42 @@ abstract class _GameListViewModelBase with Store {
   List<GameModel> games = [];
 
   @observable
+  Categories? category;
+
+  @action
+  void setCategory(Categories? val) {
+    category = val;
+  }
+
+  @observable
+  SortItems? sort;
+
+  @action
+  void setSort(SortItems? val) {
+    sort = val;
+  }
+
+  @observable
   bool isLoading = false;
 
   @action
-  void changeLoading() {
-    isLoading = !isLoading;
+  void changeLoading({bool? val}) {
+    isLoading = val ?? !isLoading;
+  }
+
+  @observable
+  bool showFilter = false;
+
+  @action
+  void changeShowFilter() {
+    showFilter = !showFilter;
   }
 
   @action
   Future<void> refreshGames() async {
-    changeLoading();
+    changeLoading(val: true);
     games.clear();
-    games = await _service.getGames() ?? [];
-    inspect(games);
-    changeLoading();
+    games = await _service.getGames(category, sort) ?? [];
+    changeLoading(val: false);
   }
 }

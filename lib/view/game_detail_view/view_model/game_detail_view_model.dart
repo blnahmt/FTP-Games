@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:ftp_games/core/network/network_manager.dart';
 import 'package:ftp_games/view/game_detail_view/models/game_detail_model.dart';
 import 'package:ftp_games/view/games_list_view/service/i_game_service.dart';
@@ -15,7 +13,7 @@ abstract class _GameDetailViewModelBase with Store {
   init(int id) async {
     changeLoading();
     gameModel = await _service.getGameDetail(id);
-    inspect(gameModel);
+
     changeLoading();
   }
 

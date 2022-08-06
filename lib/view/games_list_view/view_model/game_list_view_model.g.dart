@@ -25,6 +25,38 @@ mixin _$GameListViewModel on _GameListViewModelBase, Store {
     });
   }
 
+  late final _$categoryAtom =
+      Atom(name: '_GameListViewModelBase.category', context: context);
+
+  @override
+  Categories? get category {
+    _$categoryAtom.reportRead();
+    return super.category;
+  }
+
+  @override
+  set category(Categories? value) {
+    _$categoryAtom.reportWrite(value, super.category, () {
+      super.category = value;
+    });
+  }
+
+  late final _$sortAtom =
+      Atom(name: '_GameListViewModelBase.sort', context: context);
+
+  @override
+  SortItems? get sort {
+    _$sortAtom.reportRead();
+    return super.sort;
+  }
+
+  @override
+  set sort(SortItems? value) {
+    _$sortAtom.reportWrite(value, super.sort, () {
+      super.sort = value;
+    });
+  }
+
   late final _$isLoadingAtom =
       Atom(name: '_GameListViewModelBase.isLoading', context: context);
 
@@ -41,6 +73,22 @@ mixin _$GameListViewModel on _GameListViewModelBase, Store {
     });
   }
 
+  late final _$showFilterAtom =
+      Atom(name: '_GameListViewModelBase.showFilter', context: context);
+
+  @override
+  bool get showFilter {
+    _$showFilterAtom.reportRead();
+    return super.showFilter;
+  }
+
+  @override
+  set showFilter(bool value) {
+    _$showFilterAtom.reportWrite(value, super.showFilter, () {
+      super.showFilter = value;
+    });
+  }
+
   late final _$refreshGamesAsyncAction =
       AsyncAction('_GameListViewModelBase.refreshGames', context: context);
 
@@ -53,11 +101,44 @@ mixin _$GameListViewModel on _GameListViewModelBase, Store {
       ActionController(name: '_GameListViewModelBase', context: context);
 
   @override
-  void changeLoading() {
+  void setCategory(Categories? val) {
+    final _$actionInfo = _$_GameListViewModelBaseActionController.startAction(
+        name: '_GameListViewModelBase.setCategory');
+    try {
+      return super.setCategory(val);
+    } finally {
+      _$_GameListViewModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSort(SortItems? val) {
+    final _$actionInfo = _$_GameListViewModelBaseActionController.startAction(
+        name: '_GameListViewModelBase.setSort');
+    try {
+      return super.setSort(val);
+    } finally {
+      _$_GameListViewModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void changeLoading({bool? val}) {
     final _$actionInfo = _$_GameListViewModelBaseActionController.startAction(
         name: '_GameListViewModelBase.changeLoading');
     try {
-      return super.changeLoading();
+      return super.changeLoading(val: val);
+    } finally {
+      _$_GameListViewModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void changeShowFilter() {
+    final _$actionInfo = _$_GameListViewModelBaseActionController.startAction(
+        name: '_GameListViewModelBase.changeShowFilter');
+    try {
+      return super.changeShowFilter();
     } finally {
       _$_GameListViewModelBaseActionController.endAction(_$actionInfo);
     }
@@ -67,7 +148,10 @@ mixin _$GameListViewModel on _GameListViewModelBase, Store {
   String toString() {
     return '''
 games: ${games},
-isLoading: ${isLoading}
+category: ${category},
+sort: ${sort},
+isLoading: ${isLoading},
+showFilter: ${showFilter}
     ''';
   }
 }

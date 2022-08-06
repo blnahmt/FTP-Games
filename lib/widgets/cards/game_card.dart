@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ftp_games/core/extentions/context_extentions.dart';
 import 'package:ftp_games/core/extentions/padding_extentions.dart';
-import 'package:ftp_games/view/game_detail_view/view/game_detail_view.dart';
+import 'package:ftp_games/core/extentions/radius_extentions.dart';
+import 'package:ftp_games/core/navigation/navigation_service.dart';
+import 'package:ftp_games/core/navigation/routes.dart';
 import 'package:ftp_games/view/games_list_view/models/game_model.dart';
-import 'package:ionicons/ionicons.dart';
 
 class GameCard extends StatelessWidget {
   const GameCard({
@@ -16,28 +17,23 @@ class GameCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) {
-            return GameDetailView(
-              id: gameModel.id ?? 0,
-              thumbnail: gameModel.thumbnail ?? '',
-            );
-          },
-        ));
+        NavigationService.instance.toPage(
+            routeName: Routes.gameDetail.nameWithSlash,
+            args: [gameModel.id ?? 0, gameModel.thumbnail ?? '']);
       },
       child: Card(
+        shape: RoundedRectangleBorder(borderRadius: context.radiusLow),
         margin: context.paddingMediumAll,
         child: Column(
           children: [
             Hero(
               tag: "${gameModel.id}",
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: context.radiusLow,
                 child: Image.network(
-                  width: double.infinity,
-                  gameModel.thumbnail ?? '',
-                  fit: BoxFit.cover,
-                ),
+                    width: double.infinity,
+                    gameModel.thumbnail ?? '',
+                    fit: BoxFit.cover),
               ),
             ),
             ListTile(
@@ -58,9 +54,6 @@ class GameCard extends StatelessWidget {
                     gameModel.genre ?? '',
                     style: context.theme.textTheme.bodyMedium,
                   ),
-                  gameModel.platform == Platforms.pc
-                      ? const Icon(Ionicons.logo_windows)
-                      : const Icon(Ionicons.browsers_outline)
                 ],
               ),
             ),

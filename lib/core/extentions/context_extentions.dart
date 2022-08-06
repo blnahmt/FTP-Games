@@ -7,5 +7,5 @@ extension ContextExtentions on BuildContext {
   double dynamicHeight(int value) =>
       MediaQuery.of(this).size.height * (value / 100);
 
-  get theme => Theme.of(this);
+  ThemeData get theme => Theme.of(this);
 }

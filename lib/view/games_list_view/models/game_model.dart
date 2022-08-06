@@ -51,3 +51,15 @@ enum Platforms {
   @JsonValue('Web Browser')
   browser
 }
+
+extension PlatformsExtention on Platforms {
+  String value() {
+    switch (this) {
+      case Platforms.pc:
+        return "PC (Windows)";
+
+      case Platforms.browser:
+        return "Browser";
+    }
+  }
+}

@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 double zero = 0.0;
 double lowValue = 4.0;
 double normalValue = 8.0;
-double mediumValue = 10.0;
-double highValue = 12.0;
+double mediumValue = 12.0;
+double highValue = 16.0;
 
 extension PaddingExtentions on BuildContext {
   //All side

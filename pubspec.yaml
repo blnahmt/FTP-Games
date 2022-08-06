@@ -36,6 +36,11 @@ dependencies:
   dio: ^4.0.6
   provider: ^6.0.3
   easy_localization: ^3.0.1
+  
+
+  #Util
+  url_launcher: ^6.1.5
+  shared_preferences: ^2.0.15
 
   #Google
   json_annotation: ^4.6.0
