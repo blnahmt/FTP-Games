@@ -19,6 +19,8 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/theme_notifier.dart';
 import '../../../core/theme/themes_enum.dart';
 
+part 'game_list_view_filter_parts.dart';
+
 class GameListView extends StatefulWidget {
   const GameListView({Key? key}) : super(key: key);
 
@@ -42,134 +44,15 @@ class _GameListViewState extends State<GameListView> {
       appBar: AppBar(
         actions: [
           IconButton(
-              onPressed: () {
-                showModalBottomSheet(
-                  isScrollControlled: true,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: context.radiusNormalOnly(
-                          topLeft: true, topRight: true)),
-                  backgroundColor: context.theme.backgroundColor,
-                  context: context,
-                  builder: (context) {
-                    return Stack(
-                      children: [
-                        Padding(
-                          padding: context.paddingHighVertical +
-                              (context.paddingHighOnly(top: true) * 2),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  CategoryDropDown(viewModel: _viewModel),
-                                  SortDropDown(viewModel: _viewModel)
-                                ],
-                              ),
-                              Padding(
-                                padding: context.paddingHighOnly(
-                                    top: true, left: true),
-                                child: const Text("Select Tags"),
-                              ),
-                              Padding(
-                                padding: context.paddingHighOnly(left: true) +
-                                    context.paddingLowOnly(
-                                      top: true,
-                                    ),
-                                child: MultiSelectContainer(
-                                    itemsDecoration: MultiSelectDecorations(
-                                        decoration: BoxDecoration(
-                                            color: context.theme.cardColor,
-                                            borderRadius: context.radiusNormal),
-                                        selectedDecoration: BoxDecoration(
-                                            color: context
-                                                .theme.colorScheme.primary,
-                                            borderRadius:
-                                                context.radiusNormal)),
-                                    controller: _multiSelectController,
-                                    items: Tags.values
-                                        .map((e) => MultiSelectCard(
-                                            value: e.getQueryName(),
-                                            label: e.getName()))
-                                        .toList(),
-                                    onChange: (allSelectedItems, selectedItem) {
-                                      _viewModel.setTagsText(
-                                          allSelectedItems.join("."));
-                                    }),
-                              ),
-                              Padding(
-                                padding: context.paddingHighOnly(
-                                    top: true, left: true),
-                                child: Row(
-                                  children: [
-                                    ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    context.radiusLow)),
-                                        onPressed: () {
-                                          if (_viewModel.tagsText == null) {
-                                            _viewModel.refreshGames();
-                                          } else {
-                                            _viewModel.refreshGamesWithFilter();
-                                          }
-                                          NavigationService.instance.back();
-                                        },
-                                        child: const Text("Filter")),
-                                    Padding(
-                                      padding:
-                                          context.paddingNormalOnly(left: true),
-                                      child: TextButton(
-                                          onPressed: () {
-                                            _multiSelectController
-                                                .deselectAll();
-                                            _viewModel.setCategory(null);
-                                            _viewModel.setSort(null);
-                                            _viewModel.setTagsText(null);
-                                            _viewModel.refreshGames();
-                                          },
-                                          child: const Text("Reset")),
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                            right: 0,
-                            child: IconButton(
-                              onPressed: () {
-                                NavigationService.instance.back();
-                              },
-                              padding: context.paddingNormalAll,
-                              icon: Icon(Icons.close_rounded),
-                            )),
-                        Positioned(
-                            left: 0,
-                            child: Padding(
-                              padding: context.paddingMediumAll,
-                              child: Text(
-                                "Filters",
-                                style: context.theme.textTheme.headline5,
-                              ),
-                            )),
-                      ],
-                    );
-                  },
-                );
-              },
+              onPressed: showBottomSheet,
               icon: Icon(
                 Icons.filter_alt_rounded,
                 color: context.theme.iconTheme.color,
               )),
           const _ThemeChangeButton()
         ],
-        title: Text(
+        title: const Text(
           AppConstants.appName,
-          style: context.theme.textTheme.headline5,
         ),
       ),
       body: Observer(
@@ -191,97 +74,40 @@ class _GameListViewState extends State<GameListView> {
       ),
     );
   }
-}
 
-class CategoryDropDown extends StatelessWidget {
-  const CategoryDropDown({Key? key, required viewModel})
-      : _viewModel = viewModel,
-        super(key: key);
-  final GameListViewModel _viewModel;
-  @override
-  Widget build(BuildContext context) {
-    return Observer(builder: (context) {
-      return Padding(
-        padding: context.paddingHighOnly(left: true),
-        child: FilterContainer(
-          child: DropdownButton<Categories>(
-            dropdownColor: context.theme.backgroundColor,
-            borderRadius: context.radiusLow,
-            icon: Padding(
-              padding: context.paddingLowOnly(left: true),
-              child: const Icon(
-                Icons.category_rounded,
-              ),
-            ),
-            underline: const SizedBox.shrink(),
-            hint: const Text("Select Category"),
-            items: List.generate(
-              Categories.values.length,
-              (index) => DropdownMenuItem<Categories>(
-                  value: Categories.values[index],
-                  child: Text(Categories.values[index].getName())),
-            ),
-            onChanged: (value) {
-              _viewModel.setCategory(value == Categories.all ? null : value);
-            },
-            value: _viewModel.category,
-          ),
-        ),
-      );
-    });
-  }
-}
-
-class SortDropDown extends StatelessWidget {
-  const SortDropDown({Key? key, required viewModel})
-      : _viewModel = viewModel,
-        super(key: key);
-  final GameListViewModel _viewModel;
-  @override
-  Widget build(BuildContext context) {
-    return Observer(builder: (context) {
-      return Padding(
-        padding: context.paddingHighOnly(right: true),
-        child: FilterContainer(
-          child: DropdownButton<SortItems>(
-            dropdownColor: context.theme.backgroundColor,
-            borderRadius: context.radiusLow,
-            underline: const SizedBox.shrink(),
-            hint: const Text("Select to Sort"),
-            icon: Padding(
-              padding: context.paddingLowOnly(left: true),
-              child: const Icon(
-                Icons.sort_rounded,
-              ),
-            ),
-            items: List.generate(
-              SortItems.values.length,
-              (index) => DropdownMenuItem<SortItems>(
-                  value: SortItems.values[index],
-                  child: Text(SortItems.values[index].getName())),
-            ),
-            onChanged: (value) {
-              _viewModel.setSort(value);
-            },
-            value: _viewModel.sort,
-          ),
-        ),
-      );
-    });
-  }
-}
-
-class FilterContainer extends StatelessWidget {
-  const FilterContainer({Key? key, required this.child}) : super(key: key);
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: context.paddingMediumHorizontal,
-      decoration: BoxDecoration(
-          color: context.theme.cardColor, borderRadius: context.radiusLow),
-      child: child,
+  showBottomSheet() {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+          borderRadius:
+              context.radiusNormalOnly(topLeft: true, topRight: true)),
+      backgroundColor: context.theme.backgroundColor,
+      context: context,
+      builder: (context) {
+        return Stack(
+          children: [
+            _FilterPageSheet(
+                viewModel: _viewModel,
+                multiSelectController: _multiSelectController),
+            Positioned(
+                right: 0,
+                child: IconButton(
+                  onPressed: () => NavigationService.instance.back(),
+                  padding: context.paddingNormalAll,
+                  icon: const Icon(Icons.close_rounded),
+                )),
+            Positioned(
+                left: 0,
+                child: Padding(
+                  padding: context.paddingMediumAll,
+                  child: Text(
+                    AppConstants.filters,
+                    style: context.theme.textTheme.headline5,
+                  ),
+                )),
+          ],
+        );
+      },
     );
   }
 }

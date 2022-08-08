@@ -1,5 +1,4 @@
 import 'package:device_preview/device_preview.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ftp_games/core/cache/prefs_manager.dart';
 import 'package:ftp_games/core/constants/app_constants.dart';
@@ -12,18 +11,15 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await EasyLocalization.ensureInitialized();
   await PrefsManager.instance.init();
 
-  runApp(DevicePreview(
-    builder: (context) => MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ThemeManager>(
-          create: (context) => ThemeManager(),
-        )
-      ],
-      child: const MyApp(),
-    ),
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider<ThemeManager>(
+        create: (context) => ThemeManager(),
+      )
+    ],
+    child: const MyApp(),
   ));
 }
 
@@ -37,7 +33,7 @@ class MyApp extends StatelessWidget {
       useInheritedMediaQuery: true,
       builder: DevicePreview.appBuilder,
       title: AppConstants.appName,
-      theme: context.watch<ThemeManager>().theme,
+      theme: context.watch<ThemeManager>().currentTheme,
       onGenerateRoute: ScreenRouter.generateRoute,
       navigatorKey: NavigationService.instance.navigatorKey,
       initialRoute: Routes.init.slash,

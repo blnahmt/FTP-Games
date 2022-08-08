@@ -51,7 +51,7 @@ class GameService extends IGameService {
     if (tags != null) {
       String value = tags;
       if (category != null) {
-        value = value + "." + category.getQueryName();
+        value = "$value.${category.getQueryName()}";
       }
       parameters["tag"] = value;
     }

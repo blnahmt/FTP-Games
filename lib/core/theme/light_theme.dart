@@ -1,20 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:ftp_games/core/theme/dark_theme.dart';
+import 'package:flutter/services.dart';
+import 'package:json_theme/json_theme.dart';
 
 class LightTheme {
-  TextTheme textTheme = ThemeData.light().textTheme;
-  ThemeData get theme => ThemeData(
-        brightness: Brightness.light,
-        backgroundColor: NordColors.brightGray,
-        primaryColor: Colors.blue,
-        textTheme: const TextTheme(),
-        iconTheme: const IconThemeData(color: Colors.black),
-        scaffoldBackgroundColor: NordColors.brightGray,
-        cardTheme: const CardTheme(
-          color: NordColors.gainsboro,
-        ),
-        tabBarTheme: const TabBarTheme(labelColor: Colors.black),
-        appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.transparent, elevation: 0),
-      );
+  static Future<ThemeData> getThemeData() async {
+    final themeStr =
+        await rootBundle.loadString('assets/themes/light_theme.json');
+    final themeJson = jsonDecode(themeStr);
+    final theme = ThemeDecoder.decodeThemeData(themeJson)!;
+    return theme;
+  }
 }
