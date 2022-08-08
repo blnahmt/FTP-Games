@@ -57,6 +57,22 @@ mixin _$GameListViewModel on _GameListViewModelBase, Store {
     });
   }
 
+  late final _$tagsTextAtom =
+      Atom(name: '_GameListViewModelBase.tagsText', context: context);
+
+  @override
+  String? get tagsText {
+    _$tagsTextAtom.reportRead();
+    return super.tagsText;
+  }
+
+  @override
+  set tagsText(String? value) {
+    _$tagsTextAtom.reportWrite(value, super.tagsText, () {
+      super.tagsText = value;
+    });
+  }
+
   late final _$isLoadingAtom =
       Atom(name: '_GameListViewModelBase.isLoading', context: context);
 
@@ -73,28 +89,22 @@ mixin _$GameListViewModel on _GameListViewModelBase, Store {
     });
   }
 
-  late final _$showFilterAtom =
-      Atom(name: '_GameListViewModelBase.showFilter', context: context);
-
-  @override
-  bool get showFilter {
-    _$showFilterAtom.reportRead();
-    return super.showFilter;
-  }
-
-  @override
-  set showFilter(bool value) {
-    _$showFilterAtom.reportWrite(value, super.showFilter, () {
-      super.showFilter = value;
-    });
-  }
-
   late final _$refreshGamesAsyncAction =
       AsyncAction('_GameListViewModelBase.refreshGames', context: context);
 
   @override
   Future<void> refreshGames() {
     return _$refreshGamesAsyncAction.run(() => super.refreshGames());
+  }
+
+  late final _$refreshGamesWithFilterAsyncAction = AsyncAction(
+      '_GameListViewModelBase.refreshGamesWithFilter',
+      context: context);
+
+  @override
+  Future<void> refreshGamesWithFilter() {
+    return _$refreshGamesWithFilterAsyncAction
+        .run(() => super.refreshGamesWithFilter());
   }
 
   late final _$_GameListViewModelBaseActionController =
@@ -123,6 +133,17 @@ mixin _$GameListViewModel on _GameListViewModelBase, Store {
   }
 
   @override
+  void setTagsText(String? val) {
+    final _$actionInfo = _$_GameListViewModelBaseActionController.startAction(
+        name: '_GameListViewModelBase.setTagsText');
+    try {
+      return super.setTagsText(val);
+    } finally {
+      _$_GameListViewModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void changeLoading({bool? val}) {
     final _$actionInfo = _$_GameListViewModelBaseActionController.startAction(
         name: '_GameListViewModelBase.changeLoading');
@@ -134,24 +155,13 @@ mixin _$GameListViewModel on _GameListViewModelBase, Store {
   }
 
   @override
-  void changeShowFilter() {
-    final _$actionInfo = _$_GameListViewModelBaseActionController.startAction(
-        name: '_GameListViewModelBase.changeShowFilter');
-    try {
-      return super.changeShowFilter();
-    } finally {
-      _$_GameListViewModelBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
 games: ${games},
 category: ${category},
 sort: ${sort},
-isLoading: ${isLoading},
-showFilter: ${showFilter}
+tagsText: ${tagsText},
+isLoading: ${isLoading}
     ''';
   }
 }

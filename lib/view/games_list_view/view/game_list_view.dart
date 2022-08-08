@@ -1,14 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 import 'package:ftp_games/core/constants/app_constants.dart';
 import 'package:ftp_games/core/enums/category_enum.dart';
 import 'package:ftp_games/core/enums/sort_enum.dart';
+import 'package:ftp_games/core/enums/tag_enum.dart';
 
 import 'package:ftp_games/core/extentions/context_extentions.dart';
 import 'package:ftp_games/core/extentions/duration_extentions.dart';
 import 'package:ftp_games/core/extentions/padding_extentions.dart';
 import 'package:ftp_games/core/extentions/radius_extentions.dart';
+import 'package:ftp_games/core/navigation/navigation_service.dart';
 import 'package:ftp_games/view/games_list_view/view_model/game_list_view_model.dart';
 import 'package:ftp_games/widgets/cards/game_card.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +28,7 @@ class GameListView extends StatefulWidget {
 
 class _GameListViewState extends State<GameListView> {
   final GameListViewModel _viewModel = GameListViewModel();
+  final MultiSelectController _multiSelectController = MultiSelectController();
 
   @override
   void initState() {
@@ -39,7 +43,123 @@ class _GameListViewState extends State<GameListView> {
         actions: [
           IconButton(
               onPressed: () {
-                _viewModel.changeShowFilter();
+                showModalBottomSheet(
+                  isScrollControlled: true,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: context.radiusNormalOnly(
+                          topLeft: true, topRight: true)),
+                  backgroundColor: context.theme.backgroundColor,
+                  context: context,
+                  builder: (context) {
+                    return Stack(
+                      children: [
+                        Padding(
+                          padding: context.paddingHighVertical +
+                              (context.paddingHighOnly(top: true) * 2),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  CategoryDropDown(viewModel: _viewModel),
+                                  SortDropDown(viewModel: _viewModel)
+                                ],
+                              ),
+                              Padding(
+                                padding: context.paddingHighOnly(
+                                    top: true, left: true),
+                                child: const Text("Select Tags"),
+                              ),
+                              Padding(
+                                padding: context.paddingHighOnly(left: true) +
+                                    context.paddingLowOnly(
+                                      top: true,
+                                    ),
+                                child: MultiSelectContainer(
+                                    itemsDecoration: MultiSelectDecorations(
+                                        decoration: BoxDecoration(
+                                            color: context.theme.cardColor,
+                                            borderRadius: context.radiusNormal),
+                                        selectedDecoration: BoxDecoration(
+                                            color: context
+                                                .theme.colorScheme.primary,
+                                            borderRadius:
+                                                context.radiusNormal)),
+                                    controller: _multiSelectController,
+                                    items: Tags.values
+                                        .map((e) => MultiSelectCard(
+                                            value: e.getQueryName(),
+                                            label: e.getName()))
+                                        .toList(),
+                                    onChange: (allSelectedItems, selectedItem) {
+                                      _viewModel.setTagsText(
+                                          allSelectedItems.join("."));
+                                    }),
+                              ),
+                              Padding(
+                                padding: context.paddingHighOnly(
+                                    top: true, left: true),
+                                child: Row(
+                                  children: [
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    context.radiusLow)),
+                                        onPressed: () {
+                                          if (_viewModel.tagsText == null) {
+                                            _viewModel.refreshGames();
+                                          } else {
+                                            _viewModel.refreshGamesWithFilter();
+                                          }
+                                          NavigationService.instance.back();
+                                        },
+                                        child: const Text("Filter")),
+                                    Padding(
+                                      padding:
+                                          context.paddingNormalOnly(left: true),
+                                      child: TextButton(
+                                          onPressed: () {
+                                            _multiSelectController
+                                                .deselectAll();
+                                            _viewModel.setCategory(null);
+                                            _viewModel.setSort(null);
+                                            _viewModel.setTagsText(null);
+                                            _viewModel.refreshGames();
+                                          },
+                                          child: const Text("Reset")),
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                            right: 0,
+                            child: IconButton(
+                              onPressed: () {
+                                NavigationService.instance.back();
+                              },
+                              padding: context.paddingNormalAll,
+                              icon: Icon(Icons.close_rounded),
+                            )),
+                        Positioned(
+                            left: 0,
+                            child: Padding(
+                              padding: context.paddingMediumAll,
+                              child: Text(
+                                "Filters",
+                                style: context.theme.textTheme.headline5,
+                              ),
+                            )),
+                      ],
+                    );
+                  },
+                );
               },
               icon: Icon(
                 Icons.filter_alt_rounded,
@@ -52,41 +172,22 @@ class _GameListViewState extends State<GameListView> {
           style: context.theme.textTheme.headline5,
         ),
       ),
-      body: Column(
-        children: [
-          Observer(builder: (context) {
-            return AnimatedContainer(
-              height: _viewModel.showFilter ? kToolbarHeight : 0,
-              duration: context.durationLow,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CategoryDropDown(viewModel: _viewModel),
-                  SortDropDown(viewModel: _viewModel)
-                ],
-              ),
-            );
-          }),
-          Expanded(
-            child: Observer(
-              builder: (context) {
-                return _viewModel.isLoading
-                    ? const Center(
-                        child: CupertinoActivityIndicator(),
-                      )
-                    : ListView.builder(
-                        padding: context.paddingNormalAll,
-                        itemCount: _viewModel.games.length,
-                        itemBuilder: (context, index) {
-                          return GameCard(
-                            gameModel: _viewModel.games[index],
-                          );
-                        },
-                      );
-              },
-            ),
-          ),
-        ],
+      body: Observer(
+        builder: (context) {
+          return _viewModel.isLoading
+              ? const Center(
+                  child: CupertinoActivityIndicator(),
+                )
+              : ListView.builder(
+                  padding: context.paddingNormalAll,
+                  itemCount: _viewModel.games.length,
+                  itemBuilder: (context, index) {
+                    return GameCard(
+                      gameModel: _viewModel.games[index],
+                    );
+                  },
+                );
+        },
       ),
     );
   }
@@ -102,22 +203,29 @@ class CategoryDropDown extends StatelessWidget {
     return Observer(builder: (context) {
       return Padding(
         padding: context.paddingHighOnly(left: true),
-        child: DropdownButton<Categories>(
-          dropdownColor: context.theme.backgroundColor,
-          borderRadius: context.radiusLow,
-          underline: const SizedBox.shrink(),
-          hint: const Text("Select Category"),
-          items: List.generate(
-            Categories.values.length,
-            (index) => DropdownMenuItem<Categories>(
-                value: Categories.values[index],
-                child: Text(Categories.values[index].getName())),
+        child: FilterContainer(
+          child: DropdownButton<Categories>(
+            dropdownColor: context.theme.backgroundColor,
+            borderRadius: context.radiusLow,
+            icon: Padding(
+              padding: context.paddingLowOnly(left: true),
+              child: const Icon(
+                Icons.category_rounded,
+              ),
+            ),
+            underline: const SizedBox.shrink(),
+            hint: const Text("Select Category"),
+            items: List.generate(
+              Categories.values.length,
+              (index) => DropdownMenuItem<Categories>(
+                  value: Categories.values[index],
+                  child: Text(Categories.values[index].getName())),
+            ),
+            onChanged: (value) {
+              _viewModel.setCategory(value == Categories.all ? null : value);
+            },
+            value: _viewModel.category,
           ),
-          onChanged: (value) {
-            _viewModel.setCategory(value == Categories.all ? null : value);
-            _viewModel.refreshGames();
-          },
-          value: _viewModel.category,
         ),
       );
     });
@@ -133,26 +241,48 @@ class SortDropDown extends StatelessWidget {
   Widget build(BuildContext context) {
     return Observer(builder: (context) {
       return Padding(
-        padding: context.paddingHighOnly(left: true),
-        child: DropdownButton<SortItems>(
-          dropdownColor: context.theme.backgroundColor,
-          borderRadius: context.radiusLow,
-          underline: const SizedBox.shrink(),
-          hint: const Text("Select to Sort"),
-          items: List.generate(
-            SortItems.values.length,
-            (index) => DropdownMenuItem<SortItems>(
-                value: SortItems.values[index],
-                child: Text(SortItems.values[index].getName())),
+        padding: context.paddingHighOnly(right: true),
+        child: FilterContainer(
+          child: DropdownButton<SortItems>(
+            dropdownColor: context.theme.backgroundColor,
+            borderRadius: context.radiusLow,
+            underline: const SizedBox.shrink(),
+            hint: const Text("Select to Sort"),
+            icon: Padding(
+              padding: context.paddingLowOnly(left: true),
+              child: const Icon(
+                Icons.sort_rounded,
+              ),
+            ),
+            items: List.generate(
+              SortItems.values.length,
+              (index) => DropdownMenuItem<SortItems>(
+                  value: SortItems.values[index],
+                  child: Text(SortItems.values[index].getName())),
+            ),
+            onChanged: (value) {
+              _viewModel.setSort(value);
+            },
+            value: _viewModel.sort,
           ),
-          onChanged: (value) {
-            _viewModel.setSort(value);
-            _viewModel.refreshGames();
-          },
-          value: _viewModel.sort,
         ),
       );
     });
+  }
+}
+
+class FilterContainer extends StatelessWidget {
+  const FilterContainer({Key? key, required this.child}) : super(key: key);
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: context.paddingMediumHorizontal,
+      decoration: BoxDecoration(
+          color: context.theme.cardColor, borderRadius: context.radiusLow),
+      child: child,
+    );
   }
 }
 

@@ -41,6 +41,7 @@ dependencies:
   #Util
   url_launcher: ^6.1.5
   shared_preferences: ^2.0.15
+  device_preview: ^1.1.0
 
   #Google
   json_annotation: ^4.6.0
@@ -49,6 +50,7 @@ dependencies:
 
   #UI
   ionicons: ^0.2.1
+  flutter_multi_select_items: ^0.4.2
   
 
 
@@ -81,8 +83,9 @@ flutter:
   uses-material-design: true
 
   
-  assets:
-    - assets/translations/
+  #assets:
+  #  - assets/images
+    
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

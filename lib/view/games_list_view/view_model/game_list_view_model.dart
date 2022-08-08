@@ -3,7 +3,6 @@ import 'package:ftp_games/core/enums/sort_enum.dart';
 import 'package:ftp_games/core/network/network_manager.dart';
 import 'package:ftp_games/view/games_list_view/models/game_model.dart';
 import 'package:ftp_games/view/games_list_view/service/game_service.dart';
-import 'package:ftp_games/view/games_list_view/service/i_game_service.dart';
 import 'package:mobx/mobx.dart';
 part 'game_list_view_model.g.dart';
 
@@ -37,6 +36,14 @@ abstract class _GameListViewModelBase with Store {
   }
 
   @observable
+  String? tagsText;
+
+  @action
+  void setTagsText(String? val) {
+    tagsText = val;
+  }
+
+  @observable
   bool isLoading = false;
 
   @action
@@ -44,19 +51,19 @@ abstract class _GameListViewModelBase with Store {
     isLoading = val ?? !isLoading;
   }
 
-  @observable
-  bool showFilter = false;
-
-  @action
-  void changeShowFilter() {
-    showFilter = !showFilter;
-  }
-
   @action
   Future<void> refreshGames() async {
     changeLoading(val: true);
     games.clear();
     games = await _service.getGames(category, sort) ?? [];
+    changeLoading(val: false);
+  }
+
+  @action
+  Future<void> refreshGamesWithFilter() async {
+    changeLoading(val: true);
+    games.clear();
+    games = await _service.getGamesWithFilter(category, sort, tagsText) ?? [];
     changeLoading(val: false);
   }
 }
