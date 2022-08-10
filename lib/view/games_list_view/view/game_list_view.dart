@@ -75,6 +75,7 @@ class _GameListViewState extends State<GameListView> {
   }
 
   showBottomSheet() {
+    _viewModel.setTagsText(null);
     showModalBottomSheet(
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
