@@ -5,7 +5,7 @@ Free to Play Games app made with Flutter
 
 ## Screenshots
 
-![App Screenshot](/ScreenShots/1.png)
+![App Screenshot](/screenshots/1.png)
 
 ## Getting Started
 
