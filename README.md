@@ -1,7 +1,15 @@
-# ftp_games
+# FTP Games
 
-Free to Play Games app made with Flutter
+Free to Play Games app made with Flutter. This App was created to train my skills in Flutter
 
+
+# Api
+
+Games on [Free-to-Play Games Database API](https://rapidapi.com/digiwalls/api/free-to-play-games-database/)
+
+#Theme
+
+Color Scheme : [Nord Color Scheme](https://www.nordtheme.com/docs/colors-and-palettes)
 
 ## Screenshots
 
