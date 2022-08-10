@@ -1,6 +1,11 @@
 # ftp_games
 
-A new Flutter project.
+Free to Play Games app made with Flutter
+
+
+## Screenshots
+
+![App Screenshot](/ScreenShots/1.png)
 
 ## Getting Started
 
