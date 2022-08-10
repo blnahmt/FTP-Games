@@ -397,9 +397,9 @@
     "bodyLarge": {
       "color": "#dd434c5e",
       "decoration": "none",
-      "fontFamily": "Roboto_regular",
+      "fontFamily": "OpenSans_regular",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w400",
       "fontSize": 16,
@@ -410,9 +410,9 @@
     "bodyMedium": {
       "color": "#dd434c5e",
       "decoration": "none",
-      "fontFamily": "Roboto_regular",
+      "fontFamily": "OpenSans_regular",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w400",
       "fontSize": 14,
@@ -423,9 +423,9 @@
     "bodySmall": {
       "color": "#8a000000",
       "decoration": "none",
-      "fontFamily": "Roboto_regular",
+      "fontFamily": "OpenSans_regular",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w400",
       "fontSize": 12,
@@ -436,9 +436,9 @@
     "displayLarge": {
       "color": "#8a2e3440",
       "decoration": "none",
-      "fontFamily": "Roboto_300",
+      "fontFamily": "OpenSans_300",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w300",
       "fontSize": 96,
@@ -449,9 +449,9 @@
     "displayMedium": {
       "color": "#8a2e3440",
       "decoration": "none",
-      "fontFamily": "Roboto_300",
+      "fontFamily": "OpenSans_300",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w300",
       "fontSize": 60,
@@ -462,9 +462,9 @@
     "displaySmall": {
       "color": "#8a2e3440",
       "decoration": "none",
-      "fontFamily": "Roboto_regular",
+      "fontFamily": "OpenSans_regular",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w400",
       "fontSize": 48,
@@ -475,18 +475,18 @@
     "headlineLarge": {
       "color": "#8a000000",
       "decoration": "none",
-      "fontFamily": "Roboto_regular",
+      "fontFamily": "OpenSans_regular",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "inherit": true
     },
     "headlineMedium": {
       "color": "#8a2e3440",
       "decoration": "none",
-      "fontFamily": "Roboto_regular",
+      "fontFamily": "OpenSans_regular",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w400",
       "fontSize": 34,
@@ -497,9 +497,9 @@
     "headlineSmall": {
       "color": "#dd2e3440",
       "decoration": "none",
-      "fontFamily": "Roboto_regular",
+      "fontFamily": "OpenSans_regular",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w400",
       "fontSize": 24,
@@ -510,9 +510,9 @@
     "labelLarge": {
       "color": "#dd000000",
       "decoration": "none",
-      "fontFamily": "Roboto_500",
+      "fontFamily": "OpenSans_500",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w500",
       "fontSize": 14,
@@ -523,18 +523,18 @@
     "labelMedium": {
       "color": "#ff000000",
       "decoration": "none",
-      "fontFamily": "Roboto_regular",
+      "fontFamily": "OpenSans_regular",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "inherit": true
     },
     "labelSmall": {
       "color": "#ff000000",
       "decoration": "none",
-      "fontFamily": "Roboto_regular",
+      "fontFamily": "OpenSans_regular",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w400",
       "fontSize": 10,
@@ -545,9 +545,9 @@
     "titleLarge": {
       "color": "#dd2e3440",
       "decoration": "none",
-      "fontFamily": "Roboto_500",
+      "fontFamily": "OpenSans_500",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w500",
       "fontSize": 20,
@@ -558,9 +558,9 @@
     "titleMedium": {
       "color": "#dd3b4252",
       "decoration": "none",
-      "fontFamily": "Roboto_regular",
+      "fontFamily": "OpenSans_regular",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w400",
       "fontSize": 16,
@@ -571,9 +571,9 @@
     "titleSmall": {
       "color": "#ff3b4252",
       "decoration": "none",
-      "fontFamily": "Roboto_500",
+      "fontFamily": "OpenSans_500",
       "fontFamilyFallback": [
-        "Roboto"
+        "OpenSans"
       ],
       "fontWeight": "w500",
       "fontSize": 14,

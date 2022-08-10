@@ -238,7 +238,7 @@
   "hintColor": "#99d8dee9",
   "hoverColor": "#0affffff",
   "iconTheme": {
-    "color": "#ECEFF4"
+    "color": "#ffeceff4"
   },
   "indicatorColor": "#ff5e81ac",
   "inputDecorationTheme": {
@@ -286,7 +286,7 @@
   "primaryColorDark": "#ff4b678a",
   "primaryColorLight": "#ff9eb3cd",
   "primaryIconTheme": {
-    "color": "#eceff4"
+    "color": "#ffffffff"
   },
   "primaryTextTheme": {
     "bodyLarge": {
