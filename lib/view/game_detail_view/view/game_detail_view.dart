@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:ftp_games/core/constants/app_constants.dart';
 import 'package:ftp_games/core/extentions/context_extentions.dart';
+import 'package:ftp_games/core/extentions/duration_extentions.dart';
 import 'package:ftp_games/core/extentions/padding_extentions.dart';
 import 'package:ftp_games/core/extentions/radius_extentions.dart';
 import 'package:ftp_games/core/extentions/string_extentions.dart';
 import 'package:ftp_games/core/navigation/navigation_service.dart';
-import 'package:ftp_games/view/game_detail_view/models/game_detail_model.dart';
 import 'package:ftp_games/view/game_detail_view/view_model/game_detail_view_model.dart';
 import 'package:ftp_games/view/games_list_view/models/game_model.dart';
-import 'package:ftp_games/widgets/tiles/draw_req_tile.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -23,16 +23,12 @@ class GameDetailView extends StatefulWidget {
   State<GameDetailView> createState() => _GameDetailViewState();
 }
 
-class _GameDetailViewState extends State<GameDetailView>
-    with SingleTickerProviderStateMixin {
+class _GameDetailViewState extends State<GameDetailView> {
   final GameDetailViewModel _viewModel = GameDetailViewModel();
-  late final TabController _tabController;
-  int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
 
     _viewModel.init(widget.id);
   }
@@ -40,256 +36,490 @@ class _GameDetailViewState extends State<GameDetailView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Observer(
-          builder: (context) {
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildThumbnail(),
-                  _viewModel.isLoading
-                      ? Padding(
-                          padding: context.paddingHighAll,
-                          child:
-                              const Center(child: CupertinoActivityIndicator()),
-                        )
-                      : _buildDetailView(context)
-                ],
-              ),
-            );
-          },
-        ),
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        leading: const _BackButton(),
+        backgroundColor: Colors.transparent,
+      ),
+      body: Observer(
+        builder: (context) {
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _ThumbnailImage(
+                  heroTag: widget.id.toString(),
+                  thumbnail: widget.thumbnail,
+                ),
+                _viewModel.isLoading
+                    ? Padding(
+                        padding: context.paddingHighOnly(top: true),
+                        child:
+                            const Center(child: CupertinoActivityIndicator()),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _TitleRow(viewModel: _viewModel),
+                          _Description(viewModel: _viewModel),
+                          _viewModel.gameModel?.screenshots != null
+                              ? _viewModel.gameModel!.screenshots!.isNotEmpty
+                                  ? _ScreenShots(viewModel: _viewModel)
+                                  : const SizedBox.shrink()
+                              : const SizedBox.shrink(),
+                          _AdditionalInformation(viewModel: _viewModel),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: context.paddingMediumOnly(
+                                    left: true, bottom: true),
+                                child: Text(
+                                  AppConstants.minimumRequirements,
+                                  style: context.theme.textTheme.headline6,
+                                ),
+                              ),
+                              _viewModel.gameModel?.platform ==
+                                      Platforms.browser
+                                  ? Padding(
+                                      padding: context.paddingMediumOnly(
+                                          left: true, bottom: true),
+                                      child: Text(
+                                        "${_viewModel.gameModel?.title} ${AppConstants.reqBrowser}",
+                                        style:
+                                            context.theme.textTheme.bodyText2,
+                                      ),
+                                    )
+                                  : _viewModel.gameModel
+                                              ?.minimumSystemRequirements ==
+                                          null
+                                      ? Padding(
+                                          padding: context.paddingMediumOnly(
+                                              left: true, bottom: true),
+                                          child: Text(
+                                            "${AppConstants.reqNotFound} ${_viewModel.gameModel?.title} ",
+                                            style: context
+                                                .theme.textTheme.bodyText2,
+                                          ),
+                                        )
+                                      : Column(
+                                          children: [
+                                            _ReqTile(
+                                              title: AppConstants.processor,
+                                              val: _viewModel
+                                                      .gameModel
+                                                      ?.minimumSystemRequirements
+                                                      ?.processor ??
+                                                  AppConstants.reqNotFound,
+                                            ),
+                                            _ReqTile(
+                                              title: AppConstants.graphics,
+                                              val: _viewModel
+                                                      .gameModel
+                                                      ?.minimumSystemRequirements
+                                                      ?.graphics ??
+                                                  AppConstants.reqNotFound,
+                                            ),
+                                            _ReqTile(
+                                              title: AppConstants.memory,
+                                              val: _viewModel
+                                                      .gameModel
+                                                      ?.minimumSystemRequirements
+                                                      ?.memory ??
+                                                  AppConstants.reqNotFound,
+                                            ),
+                                            _ReqTile(
+                                              title: AppConstants.storage,
+                                              val: _viewModel
+                                                      .gameModel
+                                                      ?.minimumSystemRequirements
+                                                      ?.storage ??
+                                                  AppConstants.reqNotFound,
+                                            ),
+                                            _ReqTile(
+                                              title: AppConstants.os,
+                                              val: _viewModel
+                                                      .gameModel
+                                                      ?.minimumSystemRequirements
+                                                      ?.os ??
+                                                  AppConstants.reqNotFound,
+                                            ),
+                                          ],
+                                        )
+                            ],
+                          )
+                        ],
+                      )
+              ],
+            ),
+          );
+        },
       ),
     );
   }
+}
 
-  Column _buildDetailView(BuildContext context) {
+class _ReqTile extends StatelessWidget {
+  const _ReqTile({
+    Key? key,
+    required title,
+    required val,
+  })  : _title = title,
+        _val = val,
+        super(key: key);
+
+  final String _title;
+  final String _val;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: context.paddingNormalVertical,
+          padding: context.paddingMediumAll,
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(
-                  onPressed: () {
-                    NavigationService.instance.back();
-                  },
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded)),
-              Expanded(
-                  child: Padding(
-                padding: context.paddingNormalOnly(left: true),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _viewModel.gameModel?.title ?? "",
-                      style: context.theme.textTheme.headlineSmall,
-                    ),
-                    Text(
-                      _viewModel.gameModel?.developer ?? "",
-                      style: context.theme.textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              )),
               Padding(
-                padding: context.paddingNormalOnly(right: true),
-                child: ElevatedButton(
-                    onPressed: () async {
-                      if (!await launchUrl(
-                          Uri.parse(_viewModel.gameModel?.gameUrl ?? ""))) {
-                        throw 'Could not launch ${_viewModel.gameModel?.gameUrl}';
-                      }
-                    },
-                    child: const Text("Website")),
+                padding: context.paddingHighOnly(right: true),
+                child: Text(
+                  "$_title : ",
+                  style: context.theme.textTheme.subtitle1,
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: context.paddingHighOnly(right: true),
+                  child: Text(
+                    _val,
+                    softWrap: true,
+                    textAlign: TextAlign.right,
+                    style: context.theme.textTheme.subtitle2,
+                  ),
+                ),
               )
             ],
           ),
         ),
-        Padding(
-          padding: context.paddingMediumOnly(left: true, bottom: true),
-          child: Text(
-            _viewModel.gameModel?.shortDescription ?? "",
-            style: context.theme.textTheme.bodyMedium,
-          ),
-        ),
-        Padding(
-          padding: context.paddingMediumOnly(
-            left: true,
-          ),
-          child: Text(
-            "Developer: ${_viewModel.gameModel?.developer}",
-            style: context.theme.textTheme.bodySmall,
-          ),
-        ),
-        Padding(
-          padding: context.paddingMediumOnly(
-            left: true,
-          ),
-          child: Text(
-            "Publisher: ${_viewModel.gameModel?.publisher}",
-            style: context.theme.textTheme.bodySmall,
-          ),
-        ),
-        Padding(
-          padding: context.paddingMediumOnly(
-            left: true,
-          ),
-          child: Text(
-            "Genre: ${_viewModel.gameModel?.genre}",
-            style: context.theme.textTheme.bodySmall,
-          ),
-        ),
-        Padding(
-          padding: context.paddingMediumOnly(
-            left: true,
-          ),
-          child: Text(
-            "Platform: ${_viewModel.gameModel?.platform?.value()}",
-            style: context.theme.textTheme.bodySmall,
-          ),
-        ),
-        Padding(
-          padding: context.paddingMediumOnly(
-            left: true,
-          ),
-          child: Text(
-            "Release Date: ${_viewModel.gameModel?.releaseDate}",
-            style: context.theme.textTheme.bodySmall,
-          ),
-        ),
-        Padding(
-          padding: context.paddingMediumOnly(
-            left: true,
-          ),
-          child: Text(
-            "Status: ${_viewModel.gameModel?.status}",
-            style: context.theme.textTheme.bodySmall,
-          ),
-        ),
-        Padding(
-          padding: context.paddingLowOnly(left: true),
-          child: TextButton(
-              onPressed: () async {
-                if (!await launchUrl(Uri.parse(
-                    _viewModel.gameModel?.freetogameProfileUrl ?? ""))) {
-                  throw 'Could not launch ${_viewModel.gameModel?.freetogameProfileUrl}';
-                }
-              },
-              child: const Text(
-                "Open on FreeToGame",
-              )),
-        ),
-        TabBar(
-            onTap: (value) {
-              setState(() {
-                _currentIndex = value;
-              });
-            },
-            controller: _tabController,
-            isScrollable: true,
-            tabs: [
-              Tab(text: TabItems.details.name.inCaps),
-              Tab(text: TabItems.screenshots.name.inCaps),
-              Tab(text: TabItems.requirements.name.inCaps)
-            ]),
-        _getPage(_currentIndex)
+        const Divider(thickness: 2),
       ],
     );
   }
+}
 
-  Hero _buildThumbnail() {
+class _AdditionalInformation extends StatelessWidget {
+  const _AdditionalInformation({
+    Key? key,
+    required GameDetailViewModel viewModel,
+  })  : _viewModel = viewModel,
+        super(key: key);
+
+  final GameDetailViewModel _viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: context.paddingMediumAll,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppConstants.additionalInformation,
+            style: context.theme.textTheme.headline6,
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _AdditionalInformationTile(
+                      title: AppConstants.developer,
+                      val: _viewModel.gameModel?.developer,
+                    ),
+                    _AdditionalInformationTile(
+                      title: AppConstants.genre,
+                      val: _viewModel.gameModel?.genre,
+                    ),
+                    _AdditionalInformationTile(
+                      title: AppConstants.platform,
+                      val: _viewModel.gameModel?.platform?.name.inCaps,
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _AdditionalInformationTile(
+                      title: AppConstants.publisher,
+                      val: _viewModel.gameModel?.publisher,
+                    ),
+                    _AdditionalInformationTile(
+                      title: AppConstants.releaseDate,
+                      val: _viewModel.gameModel?.releaseDate,
+                    ),
+                    _AdditionalInformationTile(
+                      title: AppConstants.status,
+                      val: _viewModel.gameModel?.status,
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AdditionalInformationTile extends StatelessWidget {
+  const _AdditionalInformationTile({
+    Key? key,
+    required title,
+    required val,
+  })  : _title = title,
+        _val = val,
+        super(key: key);
+
+  final String _title;
+  final String _val;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: context.paddingMediumAll,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _title,
+            style: context.theme.textTheme.subtitle1,
+          ),
+          Text(
+            _val,
+            style: context.theme.textTheme.bodyText2,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Description extends StatelessWidget {
+  const _Description({
+    Key? key,
+    required GameDetailViewModel viewModel,
+  })  : _viewModel = viewModel,
+        super(key: key);
+
+  final GameDetailViewModel _viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: context.paddingMediumOnly(top: true, left: true),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "${AppConstants.about} ${_viewModel.gameModel?.title}",
+            style: context.theme.textTheme.headline6,
+          ),
+          ExpandableText(text: _viewModel.gameModel?.description ?? ""),
+        ],
+      ),
+    );
+  }
+}
+
+class _ScreenShots extends StatelessWidget {
+  const _ScreenShots({
+    Key? key,
+    required GameDetailViewModel viewModel,
+  })  : _viewModel = viewModel,
+        super(key: key);
+
+  final GameDetailViewModel _viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: context.paddingMediumOnly(left: true, top: true),
+          child: const Text(AppConstants.screenShots),
+        ),
+        Column(
+          children: List.generate(
+              _viewModel.gameModel?.screenshots?.length ?? 0,
+              (index) => Padding(
+                    padding: context.paddingMediumOnly(
+                        top: true, left: true, right: true),
+                    child: ClipRRect(
+                      borderRadius: context.radiusNormal,
+                      child: Hero(
+                        tag: _viewModel.gameModel?.screenshots?[index].image ??
+                            "screenshot",
+                        child: Image.network(
+                          _viewModel.gameModel?.screenshots?[index].image ?? "",
+                          width: double.infinity,
+                          fit: BoxFit.contain,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            return loadingProgress == null
+                                ? child
+                                : LinearProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  );
+                          },
+                        ),
+                      ),
+                    ),
+                  )),
+        )
+      ],
+    );
+  }
+}
+
+class _BackButton extends StatelessWidget {
+  const _BackButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+        onPressed: () {
+          NavigationService.instance.back();
+        },
+        icon: const Icon(
+          Icons.arrow_back_ios_new_rounded,
+          shadows: [
+            Shadow(blurRadius: 10, color: Colors.black, offset: Offset(2, 2))
+          ],
+        ));
+  }
+}
+
+class _TitleRow extends StatelessWidget {
+  const _TitleRow({
+    Key? key,
+    required GameDetailViewModel viewModel,
+  })  : _viewModel = viewModel,
+        super(key: key);
+
+  final GameDetailViewModel _viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: context.paddingHighOnly(top: true, bottom: true),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+              child: Padding(
+            padding: context.paddingHighOnly(left: true),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _viewModel.gameModel?.title ?? "",
+                  style: context.theme.textTheme.headline5,
+                  maxLines: 2,
+                ),
+                Text(
+                  _viewModel.gameModel?.developer ?? "",
+                  style: context.theme.textTheme.subtitle2,
+                ),
+              ],
+            ),
+          )),
+          Padding(
+            padding: context.paddingNormalOnly(right: true),
+            child: ElevatedButton(
+                onPressed: () async {
+                  if (!await launchUrl(
+                      Uri.parse(_viewModel.gameModel?.gameUrl ?? ""))) {
+                    throw 'Could not launch ${_viewModel.gameModel?.gameUrl}';
+                  }
+                },
+                child: Padding(
+                  padding: context.paddingNormalAll,
+                  child: const Text(
+                    AppConstants.websiteButtonText,
+                  ),
+                )),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _ThumbnailImage extends StatelessWidget {
+  const _ThumbnailImage({
+    Key? key,
+    required heroTag,
+    required thumbnail,
+  })  : _heroTag = heroTag,
+        _thumbnail = thumbnail,
+        super(key: key);
+
+  final String _heroTag;
+  final String _thumbnail;
+
+  @override
+  Widget build(BuildContext context) {
     return Hero(
-      tag: widget.id.toString(),
+      tag: _heroTag,
       child: Image.network(
-        widget.thumbnail,
+        _thumbnail,
         width: double.infinity,
         fit: BoxFit.contain,
       ),
     );
   }
-
-  Widget _getPage(int index) {
-    switch (index) {
-      case 0:
-        return Padding(
-          padding: context.paddingMediumAll,
-          child: Column(
-            children: [Text(_viewModel.gameModel?.description ?? "")],
-          ),
-        );
-      case 1:
-        return _buildScreenshotsView();
-      case 2:
-        MinimumSystemRequirements? reqs =
-            _viewModel.gameModel?.minimumSystemRequirements;
-        return DrawReqTable(
-          context: context,
-          reqs: reqs,
-        );
-      default:
-        return const SizedBox();
-    }
-  }
-
-  Column _buildScreenshotsView() {
-    return Column(
-      children: List.generate(
-          _viewModel.gameModel?.screenshots?.length ?? 0,
-          (index) => Padding(
-                padding: context.paddingMediumAll,
-                child: InkWell(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Dialog(
-                          insetPadding: EdgeInsets.zero,
-                          child: Stack(
-                            children: [
-                              InteractiveViewer(
-                                child: Container(
-                                  color: context.theme.backgroundColor,
-                                  height: double.infinity,
-                                  child: Hero(
-                                    tag: _viewModel.gameModel
-                                            ?.screenshots?[index].image ??
-                                        "screenshot",
-                                    child: Image.network(
-                                      _viewModel.gameModel?.screenshots?[index]
-                                              .image ??
-                                          "",
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const Positioned(right: 0, child: CloseButton()),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  child: ClipRRect(
-                    borderRadius: context.radiusNormal,
-                    child: Hero(
-                      tag: _viewModel.gameModel?.screenshots?[index].image ??
-                          "screenshot",
-                      child: Image.network(
-                        _viewModel.gameModel?.screenshots?[index].image ?? "",
-                        width: double.infinity,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                ),
-              )),
-    );
-  }
 }
 
-enum TabItems { details, screenshots, requirements }
+class ExpandableText extends StatefulWidget {
+  const ExpandableText({Key? key, required this.text}) : super(key: key);
+
+  final String text;
+
+  @override
+  State<ExpandableText> createState() => _ExpandableTextState();
+}
+
+class _ExpandableTextState extends State<ExpandableText>
+    with TickerProviderStateMixin<ExpandableText> {
+  bool isExpanded = false;
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: <Widget>[
+      AnimatedSize(
+          duration: context.durationLow,
+          child: Text(
+            widget.text,
+            maxLines: isExpanded ? null : 3,
+            style: context.theme.textTheme.bodyText2,
+          )),
+      TextButton.icon(
+          label: const Text(AppConstants.readMore),
+          icon: Icon(isExpanded
+              ? Icons.arrow_drop_up_rounded
+              : Icons.more_horiz_rounded),
+          onPressed: () => setState(() => isExpanded = !isExpanded))
+    ]);
+  }
+}
