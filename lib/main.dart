@@ -1,4 +1,3 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:ftp_games/core/cache/prefs_manager.dart';
 import 'package:ftp_games/core/constants/app_constants.dart';
@@ -30,8 +29,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      useInheritedMediaQuery: true,
-      builder: DevicePreview.appBuilder,
       title: AppConstants.appName,
       theme: context.watch<ThemeManager>().currentTheme,
       onGenerateRoute: ScreenRouter.generateRoute,

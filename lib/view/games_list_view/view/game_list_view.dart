@@ -45,9 +45,8 @@ class _GameListViewState extends State<GameListView> {
         actions: [
           IconButton(
               onPressed: showBottomSheet,
-              icon: Icon(
+              icon: const Icon(
                 Icons.filter_alt_rounded,
-                color: context.theme.iconTheme.color,
               )),
           const _ThemeChangeButton()
         ],
@@ -126,13 +125,11 @@ class _ThemeChangeButton extends StatelessWidget {
                   : themeChanger.changeTheme(AppThemes.dark);
             },
             icon: AnimatedCrossFade(
-              firstChild: Icon(
+              firstChild: const Icon(
                 Icons.light,
-                color: context.theme.iconTheme.color,
               ),
-              secondChild: Icon(
+              secondChild: const Icon(
                 Icons.nightlight_round,
-                color: context.theme.iconTheme.color,
               ),
               crossFadeState: themeChanger.isDark
                   ? CrossFadeState.showSecond
