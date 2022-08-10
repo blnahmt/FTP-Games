@@ -7,7 +7,7 @@ Free to Play Games app made with Flutter. This App was created to train my skill
 
 Games on [Free-to-Play Games Database API](https://rapidapi.com/digiwalls/api/free-to-play-games-database/)
 
-#Theme
+# Theme
 
 Color Scheme : [Nord Color Scheme](https://www.nordtheme.com/docs/colors-and-palettes)
 
