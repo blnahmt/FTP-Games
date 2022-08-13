@@ -9,6 +9,7 @@ class NetworkManager {
       "https://free-to-play-games-database.p.rapidapi.com/api/";
 
   Dio ftpDio = Dio(BaseOptions(baseUrl: ftpBaseURL, headers: {
+    //TODO: Add an api key from https://rapidapi.com/digiwalls/api/free-to-play-games-database/
     "X-RapidAPI-Key": MyKeys.myApiKey,
     "X-RapidAPI-Host": "free-to-play-games-database.p.rapidapi.com"
   }));
