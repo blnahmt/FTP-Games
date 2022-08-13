@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:ftp_games/my_keys.dart';
 
 class NetworkManager {
   NetworkManager._();
@@ -8,7 +9,7 @@ class NetworkManager {
       "https://free-to-play-games-database.p.rapidapi.com/api/";
 
   Dio ftpDio = Dio(BaseOptions(baseUrl: ftpBaseURL, headers: {
-    "X-RapidAPI-Key": "82152b9f3bmshe7ab8758006b149p197d4fjsn724de8a9da55",
+    "X-RapidAPI-Key": MyKeys.myApiKey,
     "X-RapidAPI-Host": "free-to-play-games-database.p.rapidapi.com"
   }));
 }
