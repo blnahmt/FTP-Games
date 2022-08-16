@@ -60,6 +60,7 @@ class _FilterPageSheet extends StatelessWidget {
               children: [
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                        padding: context.paddingHighAll,
                         shape: RoundedRectangleBorder(
                             borderRadius: context.radiusLow)),
                     onPressed: () {
