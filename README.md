@@ -5,7 +5,7 @@ Free to Play Games app made with Flutter. This App was created to train my skill
 
 # Api
 
-Games on [Free-to-Play Games Database API](https://rapidapi.com/digiwalls/api/free-to-play-games-database/)
+Games from [Free-to-Play Games Database API](https://rapidapi.com/digiwalls/api/free-to-play-games-database/)
 
 # Theme
 
